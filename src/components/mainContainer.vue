@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -112,6 +113,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["showError"]),
     startSymulation() {
       //Walidacja poprawności parametrów
       if (this.par1 && this.par2 && this.par1 !== this.par2) {
@@ -121,12 +123,25 @@ export default {
         let valB = parseInt(this.bxValue, 16);
         let valC = parseInt(this.cxValue, 16);
         let valD = parseInt(this.dxValue, 16);
+        console.log(valB);
         //Krok 2 sprawdzamy, czy wychodzi NaN (to oznacza niepoprawną liczbę w zapisie hex):
         if (isNaN(valA) || isNaN(valB) || isNaN(valC) || isNaN(valD)) {
-          console.log("Nie można przekonwertować wartości");
+          // console.log("Nie można przekonwertować wartości");
+          if (isNaN(valA))
+            this.showError("Wartość AX nie jest w zapisie szesnastkowym!");
+          if (isNaN(valB))
+            this.showError("Wartość BX nie jest w zapisie szesnastkowym!");
+          if (isNaN(valC))
+            this.showError("Wartość CX nie jest w zapisie szesnastkowym!");
+          if (isNaN(valD))
+            this.showError("Wartość DX nie jest w zapisie szesnastkowym!");
         } // Jeżeli nie jest NaN, sprawdzamy czy nie wychodzi poza FFFF
         else if (valA > 65535 || valB > 65535 || valC > 65535 || valD > 65535) {
-          console.log("Liczba większa niż FFFF");
+          // console.log("Liczba większa niż FFFF");
+          if (valA > 65535) this.showError("Wartość AX większa niż FFFF");
+          if (valB > 65535) this.showError("Wartość BX większa niż FFFF");
+          if (valC > 65535) this.showError("Wartość CX większa niż FFFF");
+          if (valD > 65535) this.showError("Wartość DX większa niż FFFF");
         } else {
           //Jeżeli parametry były poprawne można działać!!!!!!!!!!!!!!!!!!!!!!!!.
           // ax jako parametr2
@@ -160,7 +175,7 @@ export default {
         }
       } else {
         //Błędy parametrów.
-        console.log("Wystąpił błąd z parametrami.");
+        this.showError("Ustaw parametry - nie mogą być takie same!");
       }
     }
   }
